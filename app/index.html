@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Türkü Defteri</title>
+  <meta name="description" content="Deyiş, nefes ve türkü sözleri, YouTube dinleme bağlantıları, kendi repertuvarın ve bağlama akort aleti. Reklamsız, çevrimdışı çalışır, veri toplamaz.">
+  <meta name="author" content="Ali Eren Demir">
+  <meta name="theme-color" content="#3b2a22">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Türkü Defteri">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="ust">
+    <a href="#/" class="logo" aria-label="Türkü listesi">
+      <img src="icons/icon-192.png" alt="" width="30" height="30">
+      <span>Türkü Defteri</span>
+    </a>
+    <a href="#/hakkinda" class="ust-dugme" aria-label="Hakkında" title="Hakkında">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v6M12 7.5v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </a>
+  </header>
+
+  <main id="sayfa" tabindex="-1"></main>
+
+  <nav class="alt-menu" aria-label="Ana menü">
+    <a href="#/" data-sekme="liste">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>Türküler</span>
+    </a>
+    <a href="#/sanatcilar" data-sekme="sanatcilar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>Sanatçılar</span>
+    </a>
+    <a href="#/repertuvar" data-sekme="repertuvar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      <span>Repertuvarım</span>
+    </a>
+    <a href="#/akort" data-sekme="akort">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h3l2-6 4 12 3-9 2 3h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Akort</span>
+    </a>
+  </nav>
+
+  <script src="data/turkuler.js"></script>
+  <script src="data/duzenler.js"></script>
+  <script src="akort.js"></script>
+  <script src="app.js"></script>
+  <script src="kurulum.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+    }
+  </script>
+</body>
+</html>
