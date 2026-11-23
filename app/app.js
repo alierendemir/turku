@@ -3,7 +3,7 @@
 (function () {
   "use strict";
 
-  var SURUM = "1.3";
+  var SURUM = "1.4";
   var sayfa = document.getElementById("sayfa");
 
   /* ---------- Yardımcılar ---------- */
@@ -39,7 +39,7 @@
   }
   var YILDIZ_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
 
-  var TURLER = { deyis: "Deyiş ve nefes", turku: "Türkü", ozgun: "Özgün" };
+  var TURLER = { deyis: "Deyiş ve nefes", turku: "Türkü", ozgun: "Özgün", siir: "Şiir ve gazel" };
   var DILLER = { tr: "Türkçe", ku: "Kurmancî", zz: "Kirmanckî (Zazaca)" };
 
   /* ---------- Veri ---------- */
@@ -165,7 +165,7 @@
     var tumu = tumTurkuler();
     var yoreler = {};
     tumu.forEach(function (t) { if (t.yore) yoreler[t.yore] = 1; });
-    var turSec = [["hepsi", "Tümü"], ["deyis", "Deyiş ve nefes"], ["turku", "Türkü"], ["ozgun", "Özgün"], ["ku", "Kurmancî"], ["zz", "Zazaca"], ["kendi", "Eklediklerim"]];
+    var turSec = [["hepsi", "Tümü"], ["deyis", "Deyiş ve nefes"], ["turku", "Türkü"], ["ozgun", "Özgün"], ["siir", "Şiir ve gazel"], ["ku", "Kurmancî"], ["zz", "Zazaca"], ["kendi", "Eklediklerim"]];
     sayfa.innerHTML =
       '<h1>Türküler</h1><p class="alt-baslik">' + tumu.length + ' kayıt. Yıldızladıkların Repertuvarım sekmesinde toplanır.</p>' +
       '<input class="arama" type="search" id="ara" placeholder="Türkü, dize, ozan ya da sanatçı ara" autocomplete="off" value="' + kacis(listeDurumu.ara) + '">' +
@@ -185,7 +185,7 @@
       var liste = tumu.filter(function (t) {
         var d = listeDurumu.tur;
         if (d === "kendi" && !t.kendi) return false;
-        if ((d === "deyis" || d === "turku" || d === "ozgun") && t.tur !== d) return false;
+        if ((d === "deyis" || d === "turku" || d === "ozgun" || d === "siir") && t.tur !== d) return false;
         if ((d === "ku" || d === "zz") && t.dil !== d) return false;
         if (listeDurumu.yore && t.yore !== listeDurumu.yore) return false;
         return !q || aramaMetni(t).indexOf(q) >= 0;

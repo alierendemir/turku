@@ -2,7 +2,12 @@ import json,re,sys,urllib.parse,unicodedata
 sys.path.insert(0,'.'); from linkler import LINK
 from antoloji import cozumle
 pages=json.load(open('ws/pages.json'))
-OZAN_DEYIS={'Abdal Musa','Pir Sultan Abdal','Kul Himmet','Virani','Teslim Abdal','Muhyiddin Abdal','Sıdkı Baba','Derviş Ali','Kul Hasan','Yunus Emre'}
+import os
+if os.path.exists('ws/pages3.json'):
+    for _t,_p in json.load(open('ws/pages3.json')).items(): pages.setdefault(_t,_p)
+# Aynı ozanın farklı yazımlarını tek ada indir
+AD_ESLE={'Hatayi':'Şah Hatayi','Hatâyî':'Şah Hatayi','Şah Hatâyî':'Şah Hatayi','Şah İsmail Hatayi':'Şah Hatayi','Şah Hatayî':'Şah Hatayi','Pir Sultan':'Pir Sultan Abdal','Pir Sultan Abdal ':'Pir Sultan Abdal'}
+OZAN_DEYIS={'Şah Hatayi','Kul Nesimi','Kul Hüseyin','Ruhsati','Kaygusuz Abdal','Seyyid Ali Sultan','Kul Mazlum','Yemini','Abdal Musa','Pir Sultan Abdal','Kul Himmet','Virani','Teslim Abdal','Muhyiddin Abdal','Sıdkı Baba','Derviş Ali','Kul Hasan','Yunus Emre'}
 OZAN_PD=OZAN_DEYIS|{'Karacaoğlan','Seyrani'}
 YASAK=re.compile(r'Akarsu|Veysel|Sefil Selimi|Nesimi Çimen|Mesleki|Bursalı',re.I)
 ILLER=['Tunceli','Erzincan','Sivas','Malatya','Elazığ','Bingöl','Erzurum','Kars','Kayseri','Tokat','Yozgat','Adıyaman','Kahramanmaraş','Çorum','Amasya','Gaziantep','Diyarbakır','Ankara','Kırşehir','Muş']
@@ -22,6 +27,7 @@ def temizle(w):
     w=re.sub(r'^\s*\*.*$','',w,flags=re.M)
     w=re.sub(r'^\s*=+\s*(.*?)\s*=+\s*$',lambda m:'\n\n— '+m.group(1)+' —\n\n',w,flags=re.M)
     w=re.sub(r'<nowiki>(.*?)</nowiki>',r'\1',w,flags=re.S)
+    w=re.sub(r'\{\{\s*(?:[Ss]öz|[Şş]iir|[Pp]oem|[Bb]lok alıntı|[Mm]etin girintisi\|[^|]*)\s*\|','',w)
     w=re.sub(r'</?section[^>]*>','',w)
     w=sablon_sil(w)
     w=re.sub(r'\[\[(?:Kategori|Category):[^\]]*\]\]','',w)
@@ -30,10 +36,16 @@ def temizle(w):
     w=re.sub(r'</?(poem|center|div|span|p|small|big|b|i)[^>]*>','',w,flags=re.I)
     w=re.sub(r"'{2,}",'',w)
     w=w.replace('&nbsp;',' ')
+    w=re.sub(r'^\s*\}\}\s*$','',w,flags=re.M).replace('}}','').replace('[[','').replace(']]','')
     satirlar=[re.sub(r'^[:\s]+','',l).rstrip() for l in w.split('\n')]
     metin='\n'.join(satirlar).strip()
     kitalar=[re.sub(r'[ \t]+',' ',k).strip() for k in re.split(r'\n\s*\n',metin)]
-    return [k for k in kitalar if k and not k.startswith('__')]
+    kitalar=[k for k in kitalar if k and not k.startswith('__') and not re.match(r'(?i)kaynak\s*:',k)]
+    # Her dizenin arasında boş satır bırakılmış sayfalar: dizeleri dörtlüklere topla
+    if len(kitalar)>=4 and sum(1 for k in kitalar if '\n' not in k)>=0.8*len(kitalar):
+        diz=[l for k in kitalar for l in k.split('\n')]
+        kitalar=['\n'.join(diz[i:i+4]) for i in range(0,len(diz),4)] if len(diz)%4==0 else ['\n'.join(diz)]
+    return kitalar
 kayit=[]; atlanan=[]
 for t,p in sorted(pages.items()):
     w=p['wt']
@@ -43,14 +55,21 @@ for t,p in sorted(pages.items()):
         if '<poem' not in govde: atlanan.append((t,'transclusion-bos')); continue
         w=re.sub(r'<pages[^>]*>','',w)+'\n'+'\n\n'.join(re.findall(r'<poem>(.*?)</poem>',govde,flags=re.S))
         w=re.sub(r'\{\{(?:center|orta)\|[^{}]*\}\}','',w)
-    m=re.search(r'eser ?sahibi\s*=\s*([^|}\n]*)',w); sahip=(m.group(1).strip() if m else '')
+    m=re.search(r'(?:eser ?sahibi|yazar)\s*=\s*([^|}\n]*)',w); sahip=(m.group(1).strip() if m else '')
     tel=re.search(r'(?:telif|notlar)\s*=\s*\{\{\s*([^|}]*)',w); tel=tel.group(1).strip().lower() if tel else ''
     derleyen=''
     if '<p>' in sahip or 'kaynak ki' in sahip or 'derleyen' in sahip:
         derleyen=re.sub(r'\s*<p>\s*',', ',sahip).strip(); sahip='Anonim'
     if sahip.lower()=='anonim': sahip='Anonim'
+    sahip=AD_ESLE.get(sahip,sahip)
+    cats0=' '.join(p['cats'])
+    if not sahip or sahip=='Anonim':
+        for _kat,_ad in (("Şah Hatayi",'Şah Hatayi'),("Kul Himmet'in",'Kul Himmet'),("Kul Nesimi",'Kul Nesimi'),("Kul Hüseyin",'Kul Hüseyin'),('Ruhsati','Ruhsati'),('Muhyiddin Abdal','Muhyiddin Abdal'),('Kaygusuz Abdal','Kaygusuz Abdal'),('Pir Sultan Abdal','Pir Sultan Abdal')):
+            if _kat in cats0 and not sahip: sahip=_ad
     if YASAK.search(sahip) or YASAK.search(derleyen): atlanan.append((t,'telif:'+sahip)); continue
-    if not (sahip=='Anonim' or sahip in OZAN_PD or 'anonim' in tel or tel.startswith('km-')): atlanan.append((t,'belirsiz:'+sahip+'/'+tel)); continue
+    pd_kaynak=bool(re.search(r'index="(Bektaşi Şairleri ve Nefesleri|Bektaşi-Kızılbaş Alevi Şairleri|Hatayi Divani|Halk Edebiyatı Antolojisi)',p['wt']))
+    if re.search(r'Ergun',sahip): sahip=''
+    if not (sahip=='Anonim' or sahip in OZAN_PD or 'anonim' in tel or tel.startswith('km-') or pd_kaynak or (not sahip and any(x in cats0 for x in ('Hatayi','Himmet','Nefesler')))): atlanan.append((t,'belirsiz:'+sahip+'/'+tel)); continue
     cats=[c.replace('Kategori:','') for c in p['cats']]
     turkuMu=any('türküleri' in c for c in cats)
     if sahip=='Karacaoğlan' and not turkuMu: atlanan.append((t,'karacaoglan-siir')); continue
@@ -60,12 +79,12 @@ for t,p in sorted(pages.items()):
     for il in ILLER:
         if any(c.startswith(il+' türküleri') or c.startswith(il+' Türküleri') for c in cats): yore=il; break
     ad=re.sub(r'\s*\([^)]*\)\s*$','',t).strip()
-    tur='deyis' if (sahip in OZAN_DEYIS or any('nefes' in c.lower() or 'semah' in c.lower() for c in cats) or 'semah' in t.lower()) else 'turku'
+    tur='siir' if 'gazelleri' in cats0 else 'deyis' if (sahip in OZAN_DEYIS or any('nefes' in c.lower() or 'semah' in c.lower() for c in cats) or 'semah' in t.lower()) else 'turku'
     k={'id':slug(t),'ad':ad,'sair':'' if sahip=='Anonim' else sahip,'tur':tur,'dil':'tr','yore':yore,
        'soz':kitalar,'kaynak':{'ad':'Vikikaynak','url':'https://tr.wikisource.org/wiki/'+urllib.parse.quote(t.replace(' ','_'))}}
     if sahip=='Anonim': k['kaynak']['not']='Anonim'+(' · '+derleyen if derleyen else '')
     kayit.append(k)
-ANTO={'Pir Sultan Abdal':'Pir Sultan Abdal','Kul Himmet':'Kul Himmet','Hatayi':'Hatayi','Virânî':'Virani','Kaygusuz Abdal':'Kaygusuz Abdal','Yunus Emre':'Yunus Emre','Muhyeddin Abdal':'Muhyiddin Abdal','Seyyîd Ali Sultan':'Seyyid Ali Sultan','Kul Mazlum':'Kul Mazlum','Yemînî':'Yemini'}
+ANTO={'Pir Sultan Abdal':'Pir Sultan Abdal','Kul Himmet':'Kul Himmet','Hatayi':'Şah Hatayi','Virânî':'Virani','Kaygusuz Abdal':'Kaygusuz Abdal','Yunus Emre':'Yunus Emre','Muhyeddin Abdal':'Muhyiddin Abdal','Seyyîd Ali Sultan':'Seyyid Ali Sultan','Kul Mazlum':'Kul Mazlum','Yemînî':'Yemini'}
 ilkler={sade(k['soz'][0].split('\n')[0]).__str__() for k in kayit if k.get('soz')}
 for alt,sair in ANTO.items():
     t='Bektaşî Şairleri ve Nefesleri/'+alt
@@ -81,12 +100,11 @@ for alt,sair in ANTO.items():
         ilkler.add(sade(ilk).__str__())
         kayit.append({'id':slug(sair+' '+ilk),'ad':ilk,'sair':sair,'tur':'deyis','dil':'tr','yore':'','soz':kitalar,
           'kaynak':{'ad':'Vikikaynak','url':'https://tr.wikisource.org/wiki/'+urllib.parse.quote(t.replace(' ','_')),'not':'Sadettin Nüzhet Ergun, Bektaşi Şairleri ve Nefesleri'}})
-for k in kayit:
-    s=' '.join(sade(k['ad']))
-    for anahtar,lst in LINK.items():
-        es=[x for x in kayit if (' '.join(sade(x['ad']))).startswith(anahtar) or anahtar.startswith(' '.join(sade(x['ad'])))]
-        if len(es)==1 and es[0] is k:
-            k['dinle']=[{'kim':t_[0],'yt':t_[1],'baslik':(t_[2] if len(t_)>2 else '')} for t_ in lst]
+_adlar=[(' '.join(sade(x['ad'])),x) for x in kayit]
+for anahtar,lst in LINK.items():
+    es=[x for a,x in _adlar if a.startswith(anahtar) or anahtar.startswith(a)]
+    if len(es)==1:
+        es[0]['dinle']=[{'kim':t_[0],'yt':t_[1],'baslik':(t_[2] if len(t_)>2 else '')} for t_ in lst]
 from baglanti import B
 for ad,sair,tur,dil,yore,lst in B:
     k={'id':'b-'+slug(ad),'ad':ad,'sair':sair,'tur':tur,'dil':dil,'yore':yore,'soz':None,'dinle':[{'kim':a,'yt':v,'baslik':b} for a,v,b in lst]}
