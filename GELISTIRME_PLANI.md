@@ -14,5 +14,11 @@ Sıradakiler:
 
 Sürüm 1.3 (22 Kasım 2026): Uygulama alierendemir/turku deposuna taşındı. Yeni adres https://alierendemir.github.io/turku/ . Kendi simgesi ve adıyla kurulur.
 
+Sürüm 1.4 (23 Kasım 2026): 1042 kayıt. Vikikaynak'ın Şah Hatayi deyişleri ve gazelleri, Kul Himmet deyişleri ve Nefesler kategorileri eklendi. Sadettin Nüzhet Ergun'un Hatayi Divanı ve Bektaşi Şairleri ve Nefesleri derlemelerinden aktarılan metinler de alındı. Şah Hatayi 80, Pir Sultan Abdal 53, Kul Himmet 42 ve Yunus Emre 82 kayıtla temsil ediliyor. Yeni tür: Şiir ve gazel. Merdan Güzelgün ve Cengiz Özkan için yeni YouTube kayıtları eklendi.
+
+Sıradakiler (1.4 sonrası):
+- Pir Sultan Abdal için Vikikaynak dışında kamu malı bir kaynak bul (örneğin 1950 öncesi basılmış ve telifi düşmüş derlemeler). Günümüz derlemeleri (Öztelli, Aslanoğlu) telifli olabilir.
+- Dertli Divani'nin sözleri telifli, yalnızca bağlantı eklenir.
+
 İleride:
 - Google Play için TWA paketi (Bubblewrap ya da PWABuilder) ve `app/.well-known/assetlinks.json`.
