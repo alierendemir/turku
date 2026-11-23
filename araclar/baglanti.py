@@ -111,6 +111,20 @@ B += [
  ("Sana Kalmaz","Aşık Mahzuni Şerif","","tr","",[("Aşık Mahzuni Şerif","vBRtA683a3Q","")]),
  ("Ağıt","Aşık Mahzuni Şerif","","tr","",[("Aşık Mahzuni Şerif","gWawPRaM0Z4","")]),
  ("Kainatın Aynasıyım","Aşık Daimi","","tr","",[("Aşık Daimi","TJh93PDiXE0","")]),
- ("Şu Dünyanın Ötesini Buldum Diyen Yalan Söyler","Hatayi","deyis","tr","",[("Aşık Daimi","20hRR8ueoDg","Müzik: Aşık Daimi")]),
+ ("Şu Dünyanın Ötesini Buldum Diyen Yalan Söyler","Şah Hatayi","deyis","tr","",[("Aşık Daimi","20hRR8ueoDg","Müzik: Aşık Daimi")]),
  ("Bu da Gelir Bu da Geçer Ağlama","","","tr","",[("Aşık Daimi","tmQRXh2kMBI","")]),
 ]
+B += [
+ ("Hey Erenler","Pir Sultan Abdal","deyis","tr","",[("Merdan Güzelgün","9H67Mp972B0","2020, dede saz")]),
+ ("Erenler Râhı","Pir Sultan Abdal","deyis","tr","",[("Erkan Oğur, Merdan Güzelgün","xy3shE-S7uk","Kalan Ses, 2025")]),
+ ("Ben Kuluyum Ali Benim Sultanım","","deyis","tr","",[("Merdan Güzelgün","xUu2-O5vWB8","Canlı, 2022")]),
+ ("İnsanı Kamile Ereyim Dersen","","","tr","Erzincan",[("Cengiz Özkan","BViovn5xgI0","Erzincan Türküleri, 2010")]),
+ ("Gücenme Sevdiğim","Aşık Daimi","","tr","Erzincan",[("Cengiz Özkan","hTFnb0nZtB0","Tuz, 2023")]),
+ ("Bugün Canân Geldi Bize","Aşık Daimi","","tr","Erzincan",[("Muharrem Temiz, Cengiz Özkan","PEYlwfjH-pk","Yâre Dokunma, 2001")]),
+ ("Göçtü Sevdiğim","Hasan Hüseyin Orhan","","tr","Malatya",[("Cengiz Özkan","PQHhMFr4HT0","Tuz, 2023")]),
+ ("Hava Bulanıyor","","turku","tr","Sivas",[("Cengiz Özkan","rSmhf7RlK2c","Tuz, 2023")]),
+ ("Kerem Eyle","Şah Hatayi","deyis","tr","",[("Erdal Erzincan, Mercan Erzincan","xocb1-l0xxg","Müzik: Yaşar Erzincan")]),
+ ("Açılın Kapılar Şah'a Gidelim","","deyis","tr","",[("Erdal Erzincan, Tolga Sağ, Yılmaz Çelik","QtXhDDbadmA","Bin Yılın Türküsü, 2002")]),
+]
+for _x in B:
+    if _x[0]=="Ervah-ı Ezelden": _x[5].append(("Cengiz Özkan","Y159GQUfJW8","Hayâlmest, 2015"))

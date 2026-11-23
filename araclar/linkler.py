@@ -32,3 +32,9 @@ EK = {
  "seyyah oldum su alemi gezerim": [("Hüseyin Korkankorkmaz","VvJy3rHqHLU","Seyyah Oldum")],
 }
 for k_,v_ in EK.items(): LINK[k_]=LINK.get(k_,[])+v_
+EK2 = {
+ "su benim divane gonlum": [("Muharrem Temiz, Cengiz Özkan","krTnlsPsSQ0","Yâre Dokunma, 2001")],
+ "hey erenler bir muskilim var benim": [],
+}
+for k_,v_ in EK2.items():
+    if v_: LINK[k_]=LINK.get(k_,[])+v_

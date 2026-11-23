@@ -2,7 +2,12 @@ import json,re,sys,urllib.parse,unicodedata
 sys.path.insert(0,'.'); from linkler import LINK
 from antoloji import cozumle
 pages=json.load(open('ws/pages.json'))
-OZAN_DEYIS={'Abdal Musa','Pir Sultan Abdal','Kul Himmet','Virani','Teslim Abdal','Muhyiddin Abdal','Sıdkı Baba','Derviş Ali','Kul Hasan','Yunus Emre'}
+import os
+if os.path.exists('ws/pages3.json'):
+    for _t,_p in json.load(open('ws/pages3.json')).items(): pages.setdefault(_t,_p)
+# Aynı ozanın farklı yazımlarını tek ada indir
+AD_ESLE={'Hatayi':'Şah Hatayi','Hatâyî':'Şah Hatayi','Şah Hatâyî':'Şah Hatayi','Şah İsmail Hatayi':'Şah Hatayi','Şah Hatayî':'Şah Hatayi','Pir Sultan':'Pir Sultan Abdal','Pir Sultan Abdal ':'Pir Sultan Abdal'}
+OZAN_DEYIS={'Şah Hatayi','Kul Nesimi','Kul Hüseyin','Ruhsati','Kaygusuz Abdal','Seyyid Ali Sultan','Kul Mazlum','Yemini','Abdal Musa','Pir Sultan Abdal','Kul Himmet','Virani','Teslim Abdal','Muhyiddin Abdal','Sıdkı Baba','Derviş Ali','Kul Hasan','Yunus Emre'}
 OZAN_PD=OZAN_DEYIS|{'Karacaoğlan','Seyrani'}
 YASAK=re.compile(r'Akarsu|Veysel|Sefil Selimi|Nesimi Çimen|Mesleki|Bursalı',re.I)
 ILLER=['Tunceli','Erzincan','Sivas','Malatya','Elazığ','Bingöl','Erzurum','Kars','Kayseri','Tokat','Yozgat','Adıyaman','Kahramanmaraş','Çorum','Amasya','Gaziantep','Diyarbakır','Ankara','Kırşehir','Muş']
@@ -49,6 +54,11 @@ for t,p in sorted(pages.items()):
     if '<p>' in sahip or 'kaynak ki' in sahip or 'derleyen' in sahip:
         derleyen=re.sub(r'\s*<p>\s*',', ',sahip).strip(); sahip='Anonim'
     if sahip.lower()=='anonim': sahip='Anonim'
+    sahip=AD_ESLE.get(sahip,sahip)
+    cats0=' '.join(p['cats'])
+    if not sahip or sahip=='Anonim':
+        for _kat,_ad in (("Şah Hatayi",'Şah Hatayi'),("Kul Himmet'in",'Kul Himmet'),("Kul Nesimi",'Kul Nesimi'),("Kul Hüseyin",'Kul Hüseyin'),('Ruhsati','Ruhsati'),('Muhyiddin Abdal','Muhyiddin Abdal'),('Kaygusuz Abdal','Kaygusuz Abdal'),('Pir Sultan Abdal','Pir Sultan Abdal')):
+            if _kat in cats0 and not sahip: sahip=_ad
     if YASAK.search(sahip) or YASAK.search(derleyen): atlanan.append((t,'telif:'+sahip)); continue
     if not (sahip=='Anonim' or sahip in OZAN_PD or 'anonim' in tel or tel.startswith('km-')): atlanan.append((t,'belirsiz:'+sahip+'/'+tel)); continue
     cats=[c.replace('Kategori:','') for c in p['cats']]
@@ -60,12 +70,12 @@ for t,p in sorted(pages.items()):
     for il in ILLER:
         if any(c.startswith(il+' türküleri') or c.startswith(il+' Türküleri') for c in cats): yore=il; break
     ad=re.sub(r'\s*\([^)]*\)\s*$','',t).strip()
-    tur='deyis' if (sahip in OZAN_DEYIS or any('nefes' in c.lower() or 'semah' in c.lower() for c in cats) or 'semah' in t.lower()) else 'turku'
+    tur='siir' if 'gazelleri' in cats0 else 'deyis' if (sahip in OZAN_DEYIS or any('nefes' in c.lower() or 'semah' in c.lower() for c in cats) or 'semah' in t.lower()) else 'turku'
     k={'id':slug(t),'ad':ad,'sair':'' if sahip=='Anonim' else sahip,'tur':tur,'dil':'tr','yore':yore,
        'soz':kitalar,'kaynak':{'ad':'Vikikaynak','url':'https://tr.wikisource.org/wiki/'+urllib.parse.quote(t.replace(' ','_'))}}
     if sahip=='Anonim': k['kaynak']['not']='Anonim'+(' · '+derleyen if derleyen else '')
     kayit.append(k)
-ANTO={'Pir Sultan Abdal':'Pir Sultan Abdal','Kul Himmet':'Kul Himmet','Hatayi':'Hatayi','Virânî':'Virani','Kaygusuz Abdal':'Kaygusuz Abdal','Yunus Emre':'Yunus Emre','Muhyeddin Abdal':'Muhyiddin Abdal','Seyyîd Ali Sultan':'Seyyid Ali Sultan','Kul Mazlum':'Kul Mazlum','Yemînî':'Yemini'}
+ANTO={'Pir Sultan Abdal':'Pir Sultan Abdal','Kul Himmet':'Kul Himmet','Hatayi':'Şah Hatayi','Virânî':'Virani','Kaygusuz Abdal':'Kaygusuz Abdal','Yunus Emre':'Yunus Emre','Muhyeddin Abdal':'Muhyiddin Abdal','Seyyîd Ali Sultan':'Seyyid Ali Sultan','Kul Mazlum':'Kul Mazlum','Yemînî':'Yemini'}
 ilkler={sade(k['soz'][0].split('\n')[0]).__str__() for k in kayit if k.get('soz')}
 for alt,sair in ANTO.items():
     t='Bektaşî Şairleri ve Nefesleri/'+alt
